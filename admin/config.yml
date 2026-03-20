@@ -19,9 +19,11 @@ collections:
       - { label: "الصورة - Image", name: "image", widget: "image" }
       - { label: "الشارة - Badge", name: "badge", widget: "string", required: false, hint: "مثال: طبعة 2024 ✨" }
       - { label: "منتج مميز - Featured", name: "featured", widget: "boolean", default: false, hint: "يظهر في الصفحة الرئيسية" }
-      - { label: "الفئة - Category", name: "category", widget: "select", options: 
+      - label: "الفئة - Category"
+        name: "category"
+        widget: "select"
+        options:
           - { label: "البكالوريا", value: "bac" }
           - { label: "شهادة التعليم المتوسط", value: "bem" }
           - { label: "كتب أخرى", value: "books" }
           - { label: "أخرى", value: "other" }
-        }
