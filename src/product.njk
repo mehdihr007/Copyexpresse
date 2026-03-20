@@ -1,0 +1,213 @@
+---
+layout: base.njk
+pagination:
+  data: collections.products
+  size: 1
+  alias: product
+permalink: "/product/{{ product.fileSlug }}/"
+---
+
+<style>
+  .product-page { padding: 40px 20px; }
+  .product-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: start; max-width: 1100px; margin: 0 auto; }
+  .product-gallery { position: sticky; top: 100px; }
+  .product-main-image { background: linear-gradient(180deg, #eef4ff 0%, #ffffff 100%); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 40px; text-align: center; position: relative; }
+  .product-main-image img { max-width: 250px; margin: 0 auto; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .product-badge-lg { position: absolute; top: 20px; right: 20px; background: linear-gradient(135deg, var(--gold), #f5c842); color: #fff; padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 0.9rem; }
+  .product-details h1 { font-size: 1.8rem; font-weight: 900; margin-bottom: 12px; }
+  .product-desc { font-size: 1.1rem; color: var(--text-mid); line-height: 1.8; margin-bottom: 24px; }
+  .product-pricing { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; padding: 20px; background: var(--green-bg); border: 1.5px solid var(--green-border); border-radius: var(--radius); }
+  .price-main { font-size: 2.2rem; font-weight: 900; color: var(--green); }
+  .price-old { font-size: 1rem; color: var(--text-muted); text-decoration: line-through; }
+  .cod-info { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--green); }
+  .order-form { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 30px; }
+  .order-form h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1.5px solid var(--border); }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-weight: 700; margin-bottom: 8px; }
+  .form-group input, .form-group select { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: var(--radius); font-family: 'Cairo', sans-serif; font-size: 1rem; }
+  .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .price-summary { background: var(--surface-2); border: 2px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0; }
+  .price-row { display: flex; justify-content: space-between; padding: 8px 0; }
+  .price-row.total { border-top: 2px solid var(--border); margin-top: 10px; padding-top: 15px; font-weight: 800; font-size: 1.2rem; }
+  .price-row.total .amount { color: var(--green); font-size: 1.4rem; }
+  @media (max-width: 768px) { .product-layout { grid-template-columns: 1fr; } .product-gallery { position: static; } .form-grid { grid-template-columns: 1fr; } }
+</style>
+
+<section class="product-page">
+  <div class="product-layout">
+    <!-- Product Image -->
+    <div class="product-gallery">
+      <div class="product-main-image">
+        {% if product.data.badge %}<span class="product-badge-lg">{{ product.data.badge }}</span>{% endif %}
+        <img src="{{ product.data.image }}" alt="{{ product.data.name }}">
+      </div>
+    </div>
+
+    <!-- Product Details & Form -->
+    <div class="product-details">
+      <h1>{{ product.data.name }}</h1>
+      <p class="product-desc">{{ product.data.description }}</p>
+
+      <div class="product-pricing">
+        <div>
+          <div class="price-main">{{ product.data.price }} دج</div>
+          {% if product.data.oldPrice %}<div class="price-old">كان {{ product.data.oldPrice }} دج</div>{% endif %}
+        </div>
+        <div class="cod-info">💵 دفع عند الاستلام</div>
+      </div>
+
+      <div class="order-form">
+        <h3>🛒 اطلب الآن</h3>
+        <form name="order-{{ product.fileSlug }}" netlify data-netlify="true" method="POST" action="/merci/">
+          <input type="hidden" name="form-name" value="order-{{ product.fileSlug }}">
+          <input type="hidden" name="product" value="{{ product.data.name }}">
+          <input type="hidden" name="price" value="{{ product.data.price }}">
+
+          <div class="form-group">
+            <label>👤 الاسم الكامل</label>
+            <input type="text" name="name" required placeholder="أدخل اسمك الكامل">
+          </div>
+
+          <div class="form-group">
+            <label>📱 رقم الهاتف</label>
+            <input type="tel" name="phone" required placeholder="05XXXXXXXX">
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>🗺️ الولاية</label>
+              <select name="wilaya" id="wilaya" required onchange="updateDelivery()">
+                <option value="">اختر الولاية</option>
+                <option value="أدرار">01 - أدرار</option>
+                <option value="الشلف">02 - الشلف</option>
+                <option value="الأغواط">03 - الأغواط</option>
+                <option value="أم البواقي">04 - أم البواقي</option>
+                <option value="باتنة">05 - باتنة</option>
+                <option value="بجاية">06 - بجاية</option>
+                <option value="بسكرة">07 - بسكرة</option>
+                <option value="بشار">08 - بشار</option>
+                <option value="البليدة">09 - البليدة</option>
+                <option value="البويرة">10 - البويرة</option>
+                <option value="تمنراست">11 - تمنراست</option>
+                <option value="تبسة">12 - تبسة</option>
+                <option value="تلمسان">13 - تلمسان</option>
+                <option value="تيارت">14 - تيارت</option>
+                <option value="تيزي وزو">15 - تيزي وزو</option>
+                <option value="الجزائر">16 - الجزائر</option>
+                <option value="الجلفة">17 - الجلفة</option>
+                <option value="جيجل">18 - جيجل</option>
+                <option value="سطيف">19 - سطيف</option>
+                <option value="سعيدة">20 - سعيدة</option>
+                <option value="سكيكدة">21 - سكيكدة</option>
+                <option value="سيدي بلعباس">22 - سيدي بلعباس</option>
+                <option value="عنابة">23 - عنابة</option>
+                <option value="قالمة">24 - قالمة</option>
+                <option value="قسنطينة">25 - قسنطينة</option>
+                <option value="المدية">26 - المدية</option>
+                <option value="مستغانم">27 - مستغانم</option>
+                <option value="المسيلة">28 - المسيلة</option>
+                <option value="معسكر">29 - معسكر</option>
+                <option value="ورقلة">30 - ورقلة</option>
+                <option value="وهران">31 - وهران</option>
+                <option value="البيض">32 - البيض</option>
+                <option value="إليزي">33 - إليزي</option>
+                <option value="برج بوعريريج">34 - برج بوعريريج</option>
+                <option value="بومرداس">35 - بومرداس</option>
+                <option value="الطارف">36 - الطارف</option>
+                <option value="تندوف">37 - تندوف</option>
+                <option value="تيسمسيلت">38 - تيسمسيلت</option>
+                <option value="الوادي">39 - الوادي</option>
+                <option value="خنشلة">40 - خنشلة</option>
+                <option value="سوق أهراس">41 - سوق أهراس</option>
+                <option value="تيبازة">42 - تيبازة</option>
+                <option value="ميلة">43 - ميلة</option>
+                <option value="عين الدفلى">44 - عين الدفلى</option>
+                <option value="النعامة">45 - النعامة</option>
+                <option value="عين تموشنت">46 - عين تموشنت</option>
+                <option value="غرداية">47 - غرداية</option>
+                <option value="غليزان">48 - غليزان</option>
+                <option value="تيميمون">49 - تيميمون</option>
+                <option value="برج باجي مختار">50 - برج باجي مختار</option>
+                <option value="أولاد جلال">51 - أولاد جلال</option>
+                <option value="بني عباس">52 - بني عباس</option>
+                <option value="عين صالح">53 - عين صالح</option>
+                <option value="عين قزام">54 - عين قزام</option>
+                <option value="توقرت">55 - توقرت</option>
+                <option value="جانت">56 - جانت</option>
+                <option value="المغير">57 - المغير</option>
+                <option value="المنيعة">58 - المنيعة</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>🚚 نوع التوصيل</label>
+              <select name="delivery_type" id="deliveryType" required onchange="updateDelivery()">
+                <option value="">اختر</option>
+                <option value="home">🏠 إلى المنزل</option>
+                <option value="office">🏢 إلى مكتب ZR</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>📍 البلدية / العنوان</label>
+            <input type="text" name="address" required placeholder="أدخل البلدية والعنوان">
+          </div>
+
+          <div class="price-summary">
+            <div class="price-row">
+              <span>سعر المنتج</span>
+              <span>{{ product.data.price }} دج</span>
+            </div>
+            <div class="price-row">
+              <span>تكلفة التوصيل</span>
+              <span id="deliveryCost">—</span>
+            </div>
+            <div class="price-row total">
+              <span>المجموع</span>
+              <span class="amount" id="totalPrice">{{ product.data.price }} دج</span>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">🛒 تأكيد الطلب — الدفع عند الاستلام</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const DELIVERY = {
+    "أدرار":{home:1400,office:1000},"الشلف":{home:850,office:500},"الأغواط":{home:950,office:600},
+    "أم البواقي":{home:850,office:500},"باتنة":{home:900,office:500},"بجاية":{home:800,office:500},
+    "بسكرة":{home:950,office:600},"بشار":{home:1100,office:700},"البليدة":{home:600,office:500},
+    "البويرة":{home:700,office:500},"تمنراست":{home:1600,office:1100},"تبسة":{home:900,office:600},
+    "تلمسان":{home:900,office:600},"تيارت":{home:850,office:500},"تيزي وزو":{home:750,office:500},
+    "الجزائر":{home:500,office:400},"الجلفة":{home:950,office:600},"جيجل":{home:900,office:500},
+    "سطيف":{home:800,office:500},"سعيدة":{home:900,office:600},"سكيكدة":{home:900,office:500},
+    "سيدي بلعباس":{home:900,office:500},"عنابة":{home:850,office:500},"قالمة":{home:900,office:500},
+    "قسنطينة":{home:800,office:500},"المدية":{home:800,office:500},"مستغانم":{home:900,office:500},
+    "المسيلة":{home:850,office:600},"معسكر":{home:900,office:500},"ورقلة":{home:950,office:700},
+    "وهران":{home:800,office:500},"البيض":{home:1100,office:700},"إليزي":{home:1600,office:1100},
+    "برج بوعريريج":{home:800,office:500},"بومرداس":{home:700,office:500},"الطارف":{home:850,office:500},
+    "تندوف":{home:1400,office:1000},"تيسمسيلت":{home:900,office:500},"الوادي":{home:950,office:700},
+    "خنشلة":{home:900,office:500},"سوق أهراس":{home:900,office:500},"تيبازة":{home:700,office:500},
+    "ميلة":{home:900,office:500},"عين الدفلى":{home:900,office:500},"النعامة":{home:1100,office:700},
+    "عين تموشنت":{home:900,office:500},"غرداية":{home:950,office:600},"غليزان":{home:900,office:500},
+    "تيميمون":{home:1400,office:1000},"برج باجي مختار":{home:1600,office:1100},"أولاد جلال":{home:950,office:600},
+    "بني عباس":{home:1100,office:1000},"عين صالح":{home:1400,office:1000},"عين قزام":{home:1600,office:1100},
+    "توقرت":{home:950,office:700},"جانت":{home:1600,office:1100},"المغير":{home:950,office:700},"المنيعة":{home:1000,office:800}
+  };
+  const productPrice = {{ product.data.price }};
+
+  function updateDelivery() {
+    const w = document.getElementById('wilaya').value;
+    const t = document.getElementById('deliveryType').value;
+    let cost = 0;
+    if (w && t && DELIVERY[w]) {
+      cost = t === 'home' ? DELIVERY[w].home : DELIVERY[w].office;
+    }
+    document.getElementById('deliveryCost').textContent = cost ? cost + ' دج' : '—';
+    document.getElementById('totalPrice').textContent = (productPrice + cost) + ' دج';
+  }
+</script>

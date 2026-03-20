@@ -1,0 +1,27 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "products"
+    label: "المنتجات - Products"
+    folder: "src/_products"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "اسم المنتج - Name", name: "name", widget: "string" }
+      - { label: "الوصف - Description", name: "description", widget: "text" }
+      - { label: "السعر - Price (DZD)", name: "price", widget: "number", value_type: "int" }
+      - { label: "السعر القديم - Old Price", name: "oldPrice", widget: "number", value_type: "int", required: false }
+      - { label: "الصورة - Image", name: "image", widget: "image" }
+      - { label: "الشارة - Badge", name: "badge", widget: "string", required: false, hint: "مثال: طبعة 2024 ✨" }
+      - { label: "منتج مميز - Featured", name: "featured", widget: "boolean", default: false, hint: "يظهر في الصفحة الرئيسية" }
+      - { label: "الفئة - Category", name: "category", widget: "select", options: 
+          - { label: "البكالوريا", value: "bac" }
+          - { label: "شهادة التعليم المتوسط", value: "bem" }
+          - { label: "كتب أخرى", value: "books" }
+          - { label: "أخرى", value: "other" }
+        }

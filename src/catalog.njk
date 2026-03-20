@@ -1,0 +1,67 @@
+---
+layout: base.njk
+title: المنتجات
+---
+
+<style>
+  .catalog-header { background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%); padding: 40px 20px; text-align: center; }
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .filter-buttons { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+  .filter-btn { padding: 10px 20px; border: 2px solid var(--border); background: var(--surface); border-radius: 25px; font-family: 'Cairo', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .filter-btn:hover, .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+</style>
+
+<section class="catalog-header">
+  <div class="container">
+    <h1 class="section-title">📚 جميع المنتجات</h1>
+    <p class="section-subtitle">اختر الكتاب المناسب لمستواك الدراسي</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="filter-buttons">
+      <button class="filter-btn active" data-filter="all">الكل</button>
+      <button class="filter-btn" data-filter="bac">البكالوريا</button>
+      <button class="filter-btn" data-filter="bem">شهادة التعليم المتوسط</button>
+      <button class="filter-btn" data-filter="books">كتب أخرى</button>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      {% for product in collections.products %}
+      <div class="product-card" data-category="{{ product.data.category }}">
+        <div class="product-card-img">
+          {% if product.data.badge %}<span class="product-badge">{{ product.data.badge }}</span>{% endif %}
+          <img src="{{ product.data.image }}" alt="{{ product.data.name }}">
+        </div>
+        <div class="product-card-body">
+          <h3 class="product-card-title">{{ product.data.name }}</h3>
+          <p class="product-card-desc">{{ product.data.description }}</p>
+        </div>
+        <div class="product-card-footer">
+          <div>
+            <div class="product-price">{{ product.data.price }} <small>دج</small></div>
+            {% if product.data.oldPrice %}<div class="product-price-old">{{ product.data.oldPrice }} دج</div>{% endif %}
+          </div>
+          <a href="/product/{{ product.fileSlug }}/" class="btn btn-primary" style="padding: 10px 18px; font-size: 0.9rem;">
+            اطلب الآن
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.product-card').forEach(card => {
+        card.style.display = (filter === 'all' || card.dataset.category === filter) ? 'flex' : 'none';
+      });
+    });
+  });
+</script>

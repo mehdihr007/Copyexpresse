@@ -1,0 +1,144 @@
+---
+layout: base.njk
+title: مكتبتك للكتب والمراجع الدراسية
+---
+
+<style>
+  .hero { text-align: center; padding: 60px 20px; background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 100%); }
+  .hero-content { max-width: 700px; margin: 0 auto; }
+  .hero h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 900; color: var(--text); line-height: 1.35; margin-bottom: 18px; }
+  .hero-sub { font-size: 1.1rem; color: var(--text-mid); margin-bottom: 28px; line-height: 1.8; }
+  .hero-buttons { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-bottom: 32px; }
+  .hero-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 40px; padding-top: 30px; border-top: 1.5px solid var(--border); }
+  .stat-item { text-align: center; }
+  .stat-number { font-size: 2rem; font-weight: 900; color: var(--primary); display: block; }
+  .stat-label { font-size: 0.9rem; color: var(--text-mid); font-weight: 600; }
+  .features { background: var(--surface); border-top: 1.5px solid var(--border); border-bottom: 1.5px solid var(--border); }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+  .feature-card { text-align: center; padding: 30px 20px; }
+  .feature-icon { width: 70px; height: 70px; margin: 0 auto 18px; background: linear-gradient(135deg, rgba(26,111,219,0.1), rgba(26,111,219,0.05)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+  .feature-card h3 { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+  .feature-card p { font-size: 0.92rem; color: var(--text-mid); line-height: 1.6; }
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+  .cta-section { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); padding: 60px 20px; text-align: center; color: #fff; }
+  .cta-section h2 { font-size: 1.8rem; font-weight: 900; margin-bottom: 14px; }
+  .cta-section p { font-size: 1.05rem; opacity: 0.9; margin-bottom: 24px; }
+  .cta-section .btn { background: #fff; color: var(--primary); }
+  @media (max-width: 768px) { .hero-stats { gap: 24px; } .stat-number { font-size: 1.6rem; } }
+</style>
+
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-content animate-fade">
+    <div class="badge badge-gold mb-2">✦ أكبر مكتبة للكتب الدراسية في الجزائر</div>
+    
+    <h1>كل ما يحتاجه <span class="highlight">طالبك</span> للنجاح<br>في مكان واحد</h1>
+    
+    <p class="hero-sub">
+      مواضيع وتصحيحات البكالوريا، كتب دراسية، مراجع علمية وأدبية —<br>
+      مع توصيل سريع لكل ولايات الجزائر والدفع عند الاستلام
+    </p>
+
+    <div class="trust-row mb-3">
+      <div class="trust-item">⚡ توصيل 48 ساعة</div>
+      <div class="trust-item">💵 الدفع عند الاستلام</div>
+      <div class="trust-item">✅ جودة مضمونة</div>
+    </div>
+
+    <div class="hero-buttons">
+      <a href="/catalog/" class="btn btn-primary btn-lg">📚 تصفح المنتجات</a>
+      <a href="#featured" class="btn btn-secondary btn-lg">⭐ الأكثر مبيعاً</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-number">+5000</span>
+        <span class="stat-label">طلب تم تسليمه</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">58</span>
+        <span class="stat-label">ولاية مغطاة</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">4.9⭐</span>
+        <span class="stat-label">تقييم العملاء</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="features section-sm">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🚚</div>
+        <h3>توصيل سريع</h3>
+        <p>نوصل طلبك خلال 48 ساعة عبر ZR Express لكل الولايات</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💵</div>
+        <h3>الدفع عند الاستلام</h3>
+        <p>لا تدفع شيئاً مسبقاً — ادفع للمندوب عند استلام طلبك</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✅</div>
+        <h3>جودة مضمونة</h3>
+        <p>طباعة عالية الجودة ومحتوى محدّث ومراجع من الخبراء</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📞</div>
+        <h3>دعم متواصل</h3>
+        <p>فريقنا متاح للرد على استفساراتك عبر الهاتف أو واتساب</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS -->
+<section class="section" id="featured">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">⭐ الأكثر مبيعاً</div>
+      <h2 class="section-title">منتجاتنا <span class="highlight">المميزة</span></h2>
+      <p class="section-subtitle">اكتشف الكتب الأكثر طلباً من طرف أولياء الأمور والطلاب</p>
+    </div>
+
+    <div class="products-grid">
+      {% for product in collections.featuredProducts %}
+      <div class="product-card">
+        <div class="product-card-img">
+          {% if product.data.badge %}<span class="product-badge">{{ product.data.badge }}</span>{% endif %}
+          <img src="{{ product.data.image }}" alt="{{ product.data.name }}">
+        </div>
+        <div class="product-card-body">
+          <h3 class="product-card-title">{{ product.data.name }}</h3>
+          <p class="product-card-desc">{{ product.data.description }}</p>
+        </div>
+        <div class="product-card-footer">
+          <div>
+            <div class="product-price">{{ product.data.price }} <small>دج</small></div>
+            {% if product.data.oldPrice %}<div class="product-price-old">{{ product.data.oldPrice }} دج</div>{% endif %}
+          </div>
+          <a href="/product/{{ product.fileSlug }}/" class="btn btn-primary" style="padding: 10px 18px; font-size: 0.9rem;">
+            اطلب الآن
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="/catalog/" class="btn btn-secondary btn-lg">عرض جميع المنتجات ←</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+  <div class="container">
+    <h2>🎓 جهّز ابنك للنجاح الآن</h2>
+    <p>اطلب الكتب التي يحتاجها واستلمها في أقل من 48 ساعة</p>
+    <a href="/catalog/" class="btn btn-lg">📚 تصفح المنتجات</a>
+  </div>
+</section>
