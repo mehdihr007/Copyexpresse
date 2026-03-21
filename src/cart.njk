@@ -28,39 +28,39 @@ title: سلة التسوق
 <section class="cart-page">
   <div class="cart-layout">
     <div class="cart-card">
-      <h1 class="cart-title">🧺 سلة التسوق</h1>
+      <h1 class="cart-title" data-i18n="nav.cart">🧺 السلة</h1>
       <div id="cartItems"></div>
-      <div id="emptyCart" class="empty-cart hidden">السلة فارغة حالياً. أضف منتجات من صفحة المنتجات.</div>
+      <div id="emptyCart" class="empty-cart hidden" data-i18n="cart.empty">السلة فارغة حالياً. أضف منتجات من صفحة المنتجات.</div>
       <div class="mt-3">
-        <a href="/catalog/" class="btn btn-secondary">← متابعة التسوق</a>
+        <a href="/catalog/" class="btn btn-secondary" data-i18n="cart.continue">← متابعة التسوق</a>
       </div>
     </div>
 
     <div class="cart-card">
-      <h2 class="cart-title">✅ إتمام الطلب</h2>
-      <div class="line"><span>إجمالي الكتب</span><span id="booksTotal">0 دج</span></div>
-      <div class="line"><span>التوصيل</span><span id="deliveryCost">—</span></div>
-      <div class="line total"><span>المجموع</span><span id="grandTotal">0 دج</span></div>
+      <h2 class="cart-title" data-i18n="cart.checkout">✅ إتمام الطلب</h2>
+      <div class="line"><span data-i18n="cart.booksTotal">إجمالي الكتب</span><span id="booksTotal">0 دج</span></div>
+      <div class="line"><span data-i18n="product.deliveryCost">تكلفة التوصيل</span><span id="deliveryCost">—</span></div>
+      <div class="line total"><span data-i18n="product.total">المجموع</span><span id="grandTotal">0 دج</span></div>
 
       <form name="order-cart" netlify data-netlify="true" method="POST" action="/merci/" class="checkout-form mt-3">
         <input type="hidden" name="form-name" value="order-cart">
         <input type="hidden" name="cart_items" id="cartItemsPayload">
         <input type="hidden" name="cart_total" id="cartTotalPayload">
 
-        <h4>بيانات العميل</h4>
+        <h4 data-i18n="cart.customer">بيانات العميل</h4>
         <div class="form-group">
-          <label>👤 الاسم الكامل</label>
-          <input type="text" name="name" required placeholder="أدخل اسمك الكامل">
+          <label data-i18n="product.fullName">👤 الاسم الكامل</label>
+          <input type="text" name="name" required placeholder="أدخل اسمك الكامل" data-i18n-placeholder="product.placeholderName">
         </div>
         <div class="form-group">
-          <label>📱 رقم الهاتف</label>
-          <input type="tel" name="phone" required placeholder="05XXXXXXXX">
+          <label data-i18n="product.phone">📱 رقم الهاتف</label>
+          <input type="tel" name="phone" required placeholder="05XXXXXXXX" data-i18n-placeholder="product.placeholderPhone">
         </div>
 
-        <h4>التوصيل</h4>
+        <h4 data-i18n="cart.delivery">التوصيل</h4>
         <div class="form-grid">
           <div class="form-group">
-            <label>🗺️ الولاية</label>
+            <label data-i18n="product.wilaya">🗺️ الولاية</label>
             <select name="wilaya" id="wilaya" required>
               <option value="">اختر الولاية</option>
               <option value="أدرار">01 - أدرار</option><option value="الشلف">02 - الشلف</option><option value="الأغواط">03 - الأغواط</option>
@@ -86,7 +86,7 @@ title: سلة التسوق
             </select>
           </div>
           <div class="form-group">
-            <label>🚚 نوع التوصيل</label>
+            <label data-i18n="product.deliveryType">🚚 نوع التوصيل</label>
             <select name="delivery_type" id="deliveryType" required>
               <option value="">اختر</option>
               <option value="home">🏠 إلى المنزل</option>
@@ -96,11 +96,11 @@ title: سلة التسوق
         </div>
 
         <div class="form-group">
-          <label>📍 البلدية / العنوان</label>
-          <input type="text" name="address" required placeholder="أدخل البلدية والعنوان">
+          <label data-i18n="product.address">📍 البلدية / العنوان</label>
+          <input type="text" name="address" required placeholder="أدخل البلدية والعنوان" data-i18n-placeholder="product.placeholderAddress">
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;" id="submitOrderBtn">🛒 تأكيد الطلب</button>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;" id="submitOrderBtn" data-i18n="cart.confirm">🛒 تأكيد الطلب</button>
       </form>
     </div>
   </div>
@@ -140,14 +140,16 @@ title: سلة التسوق
       wrap.innerHTML = '';
       empty.classList.remove('hidden');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'السلة فارغة';
+      const lang = window.BoudaI18n ? window.BoudaI18n.getLang() : 'ar';
+      submitBtn.textContent = lang === 'fr' ? 'Panier vide' : 'السلة فارغة';
       updateTotals();
       return;
     }
 
     empty.classList.add('hidden');
     submitBtn.disabled = false;
-    submitBtn.textContent = '🛒 تأكيد الطلب';
+    const lang = window.BoudaI18n ? window.BoudaI18n.getLang() : 'ar';
+    submitBtn.textContent = lang === 'fr' ? '🛒 Confirmer la commande' : '🛒 تأكيد الطلب';
 
     wrap.innerHTML = items.map((item) => `
       <div class="cart-item">
@@ -162,7 +164,7 @@ title: سلة التسوق
             <input type="number" min="1" value="${item.qty || 1}" onchange="setQty('${item.id}', this.value)">
             <button type="button" class="mini-btn" onclick="changeQty('${item.id}', 1)">+</button>
           </div>
-          <button type="button" class="mini-btn mt-1" onclick="removeCartItem('${item.id}')">حذف</button>
+          <button type="button" class="mini-btn mt-1" onclick="removeCartItem('${item.id}')">${window.BoudaI18n && window.BoudaI18n.getLang() === 'fr' ? 'Supprimer' : 'حذف'}</button>
         </div>
       </div>
     `).join('');

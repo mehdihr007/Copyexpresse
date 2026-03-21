@@ -60,13 +60,13 @@ permalink: "/product/{{ product.fileSlug }}/"
       </div>
 
       <div class="order-form">
-        <h3>🛒 اطلب الآن</h3>
+        <h3 data-i18n="product.orderNow">🛒 اطلب الآن</h3>
         <form name="order-single" netlify data-netlify="true" method="POST" action="/merci/">
           <input type="hidden" name="form-name" value="order-single">
           <input type="hidden" name="product" value="{{ product.data.name }}">
           <input type="hidden" name="price" value="{{ product.data.price }}">
 
-          <div class="section-label">اختيار الكتاب</div>
+          <div class="section-label" data-i18n="product.bookChoice">اختيار الكتاب</div>
 
           <div class="form-group">
             <label>🎓 الشعبة</label>
@@ -98,21 +98,21 @@ permalink: "/product/{{ product.fileSlug }}/"
             </select>
           </div>
 
-          <div class="section-label">بياناتك الشخصية</div>
+          <div class="section-label" data-i18n="product.personalInfo">بياناتك الشخصية</div>
 
           <div class="form-group">
-            <label>👤 الاسم الكامل</label>
-            <input type="text" name="name" required placeholder="أدخل اسمك الكامل">
+            <label data-i18n="product.fullName">👤 الاسم الكامل</label>
+            <input type="text" name="name" required placeholder="أدخل اسمك الكامل" data-i18n-placeholder="product.placeholderName">
           </div>
 
           <div class="form-group">
-            <label>📱 رقم الهاتف</label>
-            <input type="tel" name="phone" required placeholder="05XXXXXXXX">
+            <label data-i18n="product.phone">📱 رقم الهاتف</label>
+            <input type="tel" name="phone" required placeholder="05XXXXXXXX" data-i18n-placeholder="product.placeholderPhone">
           </div>
 
           <div class="form-grid">
             <div class="form-group">
-              <label>🗺️ الولاية</label>
+              <label data-i18n="product.wilaya">🗺️ الولاية</label>
               <select name="wilaya" id="wilaya" required onchange="updateBureaux()">
                 <option value="">اختر الولاية</option>
                 <option value="أدرار">01 - أدرار</option>
@@ -176,7 +176,7 @@ permalink: "/product/{{ product.fileSlug }}/"
               </select>
             </div>
             <div class="form-group">
-              <label>🚚 نوع التوصيل</label>
+              <label data-i18n="product.deliveryType">🚚 نوع التوصيل</label>
               <select name="delivery_type" id="deliveryType" required onchange="updateBureaux()">
                 <option value="">اختر</option>
                 <option value="home">🏠 إلى المنزل</option>
@@ -186,34 +186,34 @@ permalink: "/product/{{ product.fileSlug }}/"
           </div>
 
           <div class="form-group" id="bureauGroup">
-            <label>🏢 مكتب ZR Express</label>
+            <label data-i18n="product.office">🏢 مكتب ZR Express</label>
             <select id="bureau" name="bureau">
               <option value="">اختر المكتب</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label>📍 البلدية / العنوان</label>
-            <input type="text" name="address" required placeholder="أدخل البلدية والعنوان">
+            <label data-i18n="product.address">📍 البلدية / العنوان</label>
+            <input type="text" name="address" required placeholder="أدخل البلدية والعنوان" data-i18n-placeholder="product.placeholderAddress">
           </div>
 
           <div class="price-summary">
             <div class="price-row">
-              <span>سعر الكتب</span>
+              <span data-i18n="product.booksPrice">سعر الكتب</span>
               <span id="bookPriceDisplay">{{ product.data.price }} دج</span>
             </div>
             <div class="price-row">
-              <span>تكلفة التوصيل</span>
+              <span data-i18n="product.deliveryCost">تكلفة التوصيل</span>
               <span id="deliveryCost">—</span>
             </div>
             <div class="price-row total">
-              <span>المجموع</span>
+              <span data-i18n="product.total">المجموع</span>
               <span class="amount" id="totalPrice">{{ product.data.price }} دج</span>
             </div>
           </div>
 
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button type="submit" class="btn btn-primary btn-lg" style="flex:1; min-width:220px;">🛒 تأكيد الطلب — الدفع عند الاستلام</button>
+            <button type="submit" class="btn btn-primary btn-lg" style="flex:1; min-width:220px;" data-i18n="product.confirm">🛒 تأكيد الطلب — الدفع عند الاستلام</button>
             <button
               type="button"
               class="btn btn-secondary btn-lg"
@@ -225,7 +225,7 @@ permalink: "/product/{{ product.fileSlug }}/"
               data-price="{{ product.data.price }}"
               data-image="{{ product.data.image }}"
             >
-              + إضافة إلى السلة
+              <span data-i18n="product.addToCart">+ إضافة إلى السلة</span>
             </button>
           </div>
         </form>
@@ -352,7 +352,8 @@ permalink: "/product/{{ product.fileSlug }}/"
       image: this.dataset.image,
       qty: 1
     });
-    this.textContent = '✓ تمت الإضافة';
-    setTimeout(() => { this.textContent = '+ إضافة إلى السلة'; }, 1200);
+    const lang = window.BoudaI18n ? window.BoudaI18n.getLang() : 'ar';
+    this.textContent = lang === 'fr' ? '✓ Ajouté' : '✓ تمت الإضافة';
+    setTimeout(() => { this.textContent = lang === 'fr' ? '+ Ajouter au panier' : '+ إضافة إلى السلة'; }, 1200);
   });
 </script>

@@ -290,6 +290,12 @@ input, select, textarea { font-family: inherit; }
   font-size: 1.1rem;
 }
 
+.phone-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+}
+
 .footer-whatsapp {
   display: inline-flex;
   align-items: center;
