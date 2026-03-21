@@ -26,7 +26,8 @@ permalink: "/product/{{ product.fileSlug }}/"
   .form-group label { display: block; font-weight: 700; margin-bottom: 8px; }
   .form-group input, .form-group select { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: var(--radius); font-family: 'Cairo', sans-serif; font-size: 1rem; }
   .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
-  #bureauGroup { display: none; }
+  .section-label { font-weight: 800; color: var(--primary); margin: 8px 0 10px; }
+  #subCategory, #bureauGroup { display: none; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .price-summary { background: var(--surface-2); border: 2px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0; }
   .price-row { display: flex; justify-content: space-between; padding: 8px 0; }
@@ -60,10 +61,44 @@ permalink: "/product/{{ product.fileSlug }}/"
 
       <div class="order-form">
         <h3>🛒 اطلب الآن</h3>
-        <form name="order-{{ product.fileSlug }}" netlify data-netlify="true" method="POST" action="/merci/">
-          <input type="hidden" name="form-name" value="order-{{ product.fileSlug }}">
+        <form name="order-single" netlify data-netlify="true" method="POST" action="/merci/">
+          <input type="hidden" name="form-name" value="order-single">
           <input type="hidden" name="product" value="{{ product.data.name }}">
           <input type="hidden" name="price" value="{{ product.data.price }}">
+
+          <div class="section-label">اختيار الكتاب</div>
+
+          <div class="form-group">
+            <label>🎓 الشعبة</label>
+            <select id="filiere" name="filiere" onchange="updateSubCategory()" required>
+              <option value="">اختر الشعبة</option>
+              <option value="علوم تجريبية">علوم تجريبية</option>
+              <option value="رياضيات">رياضيات</option>
+              <option value="تقني رياضي">تقني رياضي</option>
+              <option value="تسيير واقتصاد">تسيير واقتصاد</option>
+              <option value="آداب وفلسفة">آداب وفلسفة</option>
+              <option value="لغات أجنبية">لغات أجنبية</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="subCategory">
+            <label>📚 التخصص</label>
+            <select id="subspecialization" name="subspecialization" onchange="updatePrice()">
+              <option value="">اختر التخصص</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>📖 نوع المواد</label>
+            <select id="materialType" name="material_type" onchange="updatePrice()" required>
+              <option value="">اختر نوع المواد</option>
+              <option value="essential">المواد الأساسية فقط — {{ product.data.price }} دج</option>
+              <option value="secondary">المواد الثانوية فقط — {{ product.data.price }} دج</option>
+              <option value="both">الأساسية + الثانوية — {{ product.data.price * 2 }} دج</option>
+            </select>
+          </div>
+
+          <div class="section-label">بياناتك الشخصية</div>
 
           <div class="form-group">
             <label>👤 الاسم الكامل</label>
@@ -164,8 +199,8 @@ permalink: "/product/{{ product.fileSlug }}/"
 
           <div class="price-summary">
             <div class="price-row">
-              <span>سعر المنتج</span>
-              <span>{{ product.data.price }} دج</span>
+              <span>سعر الكتب</span>
+              <span id="bookPriceDisplay">{{ product.data.price }} دج</span>
             </div>
             <div class="price-row">
               <span>تكلفة التوصيل</span>
@@ -177,7 +212,22 @@ permalink: "/product/{{ product.fileSlug }}/"
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">🛒 تأكيد الطلب — الدفع عند الاستلام</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="submit" class="btn btn-primary btn-lg" style="flex:1; min-width:220px;">🛒 تأكيد الطلب — الدفع عند الاستلام</button>
+            <button
+              type="button"
+              class="btn btn-secondary btn-lg"
+              style="flex:1; min-width:220px;"
+              id="addToCartBtn"
+              data-id="{{ product.fileSlug }}"
+              data-slug="{{ product.fileSlug }}"
+              data-name="{{ product.data.name }}"
+              data-price="{{ product.data.price }}"
+              data-image="{{ product.data.image }}"
+            >
+              + إضافة إلى السلة
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -225,7 +275,31 @@ permalink: "/product/{{ product.fileSlug }}/"
     "غرداية":["غرداية"],"غليزان":["غليزان"],"تيميمون":["تيميمون"],"أولاد جلال":["أولاد جلال"],
     "بني عباس":["بني عباس","بني عباس - مدينة المستقبل"],"توقرت":["توقرت"],"المغير":["المغير"],"المنيعة":["المنيعة"]
   };
+  const SPECIALIZATIONS = {
+    "علوم تجريبية": { hasSubcategories: false, subcategories: [] },
+    "رياضيات": { hasSubcategories: false, subcategories: [] },
+    "تسيير واقتصاد": { hasSubcategories: false, subcategories: [] },
+    "آداب وفلسفة": { hasSubcategories: false, subcategories: [] },
+    "تقني رياضي": { hasSubcategories: true, subcategories: ["هندسة ميكانيكية", "هندسة مدنية", "هندسة الطرائق", "هندسة كهربائية"] },
+    "لغات أجنبية": { hasSubcategories: true, subcategories: ["إسبانية", "ألمانية", "إيطالية"] }
+  };
   const productPrice = {{ product.data.price }};
+
+  function updateSubCategory() {
+    const filiere = document.getElementById('filiere').value;
+    const subSelect = document.getElementById('subspecialization');
+    const subGroup = document.getElementById('subCategory');
+    subSelect.innerHTML = '<option value="">اختر التخصص</option>';
+    subGroup.style.display = 'none';
+    const spec = SPECIALIZATIONS[filiere];
+    if (spec && spec.hasSubcategories) {
+      subGroup.style.display = 'block';
+      spec.subcategories.forEach((s) => {
+        subSelect.innerHTML += `<option value="${s}">${s}</option>`;
+      });
+    }
+    updatePrice();
+  }
 
   function updateBureaux() {
     const wilaya = document.getElementById('wilaya').value;
@@ -250,14 +324,35 @@ permalink: "/product/{{ product.fileSlug }}/"
     updateDelivery();
   }
 
+  function updatePrice() {
+    updateDelivery();
+  }
+
   function updateDelivery() {
     const w = document.getElementById('wilaya').value;
     const t = document.getElementById('deliveryType').value;
+    const materialType = document.getElementById('materialType').value;
+    const booksPrice = materialType === 'both' ? productPrice * 2 : productPrice;
     let cost = 0;
     if (w && t && DELIVERY[w]) {
       cost = t === 'home' ? DELIVERY[w].home : DELIVERY[w].office;
     }
+    document.getElementById('bookPriceDisplay').textContent = booksPrice + ' دج';
     document.getElementById('deliveryCost').textContent = cost ? cost + ' دج' : '—';
-    document.getElementById('totalPrice').textContent = (productPrice + cost) + ' دج';
+    document.getElementById('totalPrice').textContent = (booksPrice + cost) + ' دج';
   }
+
+  document.getElementById('addToCartBtn').addEventListener('click', function () {
+    if (!window.BoudaCart) return;
+    window.BoudaCart.addItem({
+      id: this.dataset.id,
+      slug: this.dataset.slug,
+      name: this.dataset.name,
+      price: Number(this.dataset.price),
+      image: this.dataset.image,
+      qty: 1
+    });
+    this.textContent = '✓ تمت الإضافة';
+    setTimeout(() => { this.textContent = '+ إضافة إلى السلة'; }, 1200);
+  });
 </script>

@@ -142,6 +142,31 @@ input, select, textarea { font-family: inherit; }
   box-shadow: 0 6px 20px rgba(26, 111, 219, 0.4);
 }
 
+.navbar-cart-link {
+  background: var(--surface);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+  box-shadow: none;
+}
+
+.navbar-cart-link:hover {
+  background: rgba(26, 111, 219, 0.08);
+}
+
+.cart-count {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--red);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0 6px;
+}
+
 /* Mobile menu toggle */
 .menu-toggle {
   display: none;

@@ -1,0 +1,219 @@
+---
+layout: base.njk
+title: سلة التسوق
+---
+
+<style>
+  .cart-page { padding: 40px 20px; }
+  .cart-layout { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
+  .cart-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 22px; }
+  .cart-title { font-size: 1.3rem; font-weight: 900; margin-bottom: 14px; }
+  .cart-item { display: grid; grid-template-columns: 70px 1fr auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .cart-item img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+  .item-name { font-weight: 800; margin-bottom: 4px; }
+  .item-price { color: var(--green); font-weight: 800; font-size: 0.95rem; }
+  .qty-wrap { display: flex; align-items: center; gap: 6px; }
+  .qty-wrap input { width: 70px; text-align: center; padding: 8px; }
+  .mini-btn { border: 1px solid var(--border); background: var(--surface-2); border-radius: 8px; padding: 6px 10px; }
+  .empty-cart { color: var(--text-mid); padding: 20px 0; text-align: center; }
+  .line { display: flex; justify-content: space-between; padding: 8px 0; }
+  .line.total { border-top: 2px solid var(--border); margin-top: 8px; padding-top: 14px; font-weight: 900; font-size: 1.15rem; }
+  .checkout-form .form-group { margin-bottom: 14px; }
+  .checkout-form h4 { margin: 16px 0 10px; color: var(--primary); font-weight: 900; }
+  .checkout-form .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .hidden { display: none; }
+  @media (max-width: 900px) { .cart-layout { grid-template-columns: 1fr; } .checkout-form .form-grid { grid-template-columns: 1fr; } }
+</style>
+
+<section class="cart-page">
+  <div class="cart-layout">
+    <div class="cart-card">
+      <h1 class="cart-title">🧺 سلة التسوق</h1>
+      <div id="cartItems"></div>
+      <div id="emptyCart" class="empty-cart hidden">السلة فارغة حالياً. أضف منتجات من صفحة المنتجات.</div>
+      <div class="mt-3">
+        <a href="/catalog/" class="btn btn-secondary">← متابعة التسوق</a>
+      </div>
+    </div>
+
+    <div class="cart-card">
+      <h2 class="cart-title">✅ إتمام الطلب</h2>
+      <div class="line"><span>إجمالي الكتب</span><span id="booksTotal">0 دج</span></div>
+      <div class="line"><span>التوصيل</span><span id="deliveryCost">—</span></div>
+      <div class="line total"><span>المجموع</span><span id="grandTotal">0 دج</span></div>
+
+      <form name="order-cart" netlify data-netlify="true" method="POST" action="/merci/" class="checkout-form mt-3">
+        <input type="hidden" name="form-name" value="order-cart">
+        <input type="hidden" name="cart_items" id="cartItemsPayload">
+        <input type="hidden" name="cart_total" id="cartTotalPayload">
+
+        <h4>بيانات العميل</h4>
+        <div class="form-group">
+          <label>👤 الاسم الكامل</label>
+          <input type="text" name="name" required placeholder="أدخل اسمك الكامل">
+        </div>
+        <div class="form-group">
+          <label>📱 رقم الهاتف</label>
+          <input type="tel" name="phone" required placeholder="05XXXXXXXX">
+        </div>
+
+        <h4>التوصيل</h4>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>🗺️ الولاية</label>
+            <select name="wilaya" id="wilaya" required>
+              <option value="">اختر الولاية</option>
+              <option value="أدرار">01 - أدرار</option><option value="الشلف">02 - الشلف</option><option value="الأغواط">03 - الأغواط</option>
+              <option value="أم البواقي">04 - أم البواقي</option><option value="باتنة">05 - باتنة</option><option value="بجاية">06 - بجاية</option>
+              <option value="بسكرة">07 - بسكرة</option><option value="بشار">08 - بشار</option><option value="البليدة">09 - البليدة</option>
+              <option value="البويرة">10 - البويرة</option><option value="تمنراست">11 - تمنراست</option><option value="تبسة">12 - تبسة</option>
+              <option value="تلمسان">13 - تلمسان</option><option value="تيارت">14 - تيارت</option><option value="تيزي وزو">15 - تيزي وزو</option>
+              <option value="الجزائر">16 - الجزائر</option><option value="الجلفة">17 - الجلفة</option><option value="جيجل">18 - جيجل</option>
+              <option value="سطيف">19 - سطيف</option><option value="سعيدة">20 - سعيدة</option><option value="سكيكدة">21 - سكيكدة</option>
+              <option value="سيدي بلعباس">22 - سيدي بلعباس</option><option value="عنابة">23 - عنابة</option><option value="قالمة">24 - قالمة</option>
+              <option value="قسنطينة">25 - قسنطينة</option><option value="المدية">26 - المدية</option><option value="مستغانم">27 - مستغانم</option>
+              <option value="المسيلة">28 - المسيلة</option><option value="معسكر">29 - معسكر</option><option value="ورقلة">30 - ورقلة</option>
+              <option value="وهران">31 - وهران</option><option value="البيض">32 - البيض</option><option value="إليزي">33 - إليزي</option>
+              <option value="برج بوعريريج">34 - برج بوعريريج</option><option value="بومرداس">35 - بومرداس</option><option value="الطارف">36 - الطارف</option>
+              <option value="تندوف">37 - تندوف</option><option value="تيسمسيلت">38 - تيسمسيلت</option><option value="الوادي">39 - الوادي</option>
+              <option value="خنشلة">40 - خنشلة</option><option value="سوق أهراس">41 - سوق أهراس</option><option value="تيبازة">42 - تيبازة</option>
+              <option value="ميلة">43 - ميلة</option><option value="عين الدفلى">44 - عين الدفلى</option><option value="النعامة">45 - النعامة</option>
+              <option value="عين تموشنت">46 - عين تموشنت</option><option value="غرداية">47 - غرداية</option><option value="غليزان">48 - غليزان</option>
+              <option value="تيميمون">49 - تيميمون</option><option value="برج باجي مختار">50 - برج باجي مختار</option><option value="أولاد جلال">51 - أولاد جلال</option>
+              <option value="بني عباس">52 - بني عباس</option><option value="عين صالح">53 - عين صالح</option><option value="عين قزام">54 - عين قزام</option>
+              <option value="توقرت">55 - توقرت</option><option value="جانت">56 - جانت</option><option value="المغير">57 - المغير</option>
+              <option value="المنيعة">58 - المنيعة</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>🚚 نوع التوصيل</label>
+            <select name="delivery_type" id="deliveryType" required>
+              <option value="">اختر</option>
+              <option value="home">🏠 إلى المنزل</option>
+              <option value="office">🏢 إلى مكتب ZR</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>📍 البلدية / العنوان</label>
+          <input type="text" name="address" required placeholder="أدخل البلدية والعنوان">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;" id="submitOrderBtn">🛒 تأكيد الطلب</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  const DELIVERY = {
+    "أدرار":{home:1400,office:1000},"الشلف":{home:850,office:500},"الأغواط":{home:950,office:600},
+    "أم البواقي":{home:850,office:500},"باتنة":{home:900,office:500},"بجاية":{home:800,office:500},
+    "بسكرة":{home:950,office:600},"بشار":{home:1100,office:700},"البليدة":{home:600,office:500},
+    "البويرة":{home:700,office:500},"تمنراست":{home:1600,office:1100},"تبسة":{home:900,office:600},
+    "تلمسان":{home:900,office:600},"تيارت":{home:850,office:500},"تيزي وزو":{home:750,office:500},
+    "الجزائر":{home:500,office:400},"الجلفة":{home:950,office:600},"جيجل":{home:900,office:500},
+    "سطيف":{home:800,office:500},"سعيدة":{home:900,office:600},"سكيكدة":{home:900,office:500},
+    "سيدي بلعباس":{home:900,office:500},"عنابة":{home:850,office:500},"قالمة":{home:900,office:500},
+    "قسنطينة":{home:800,office:500},"المدية":{home:800,office:500},"مستغانم":{home:900,office:500},
+    "المسيلة":{home:850,office:600},"معسكر":{home:900,office:500},"ورقلة":{home:950,office:700},
+    "وهران":{home:800,office:500},"البيض":{home:1100,office:700},"إليزي":{home:1600,office:1100},
+    "برج بوعريريج":{home:800,office:500},"بومرداس":{home:700,office:500},"الطارف":{home:850,office:500},
+    "تندوف":{home:1400,office:1000},"تيسمسيلت":{home:900,office:500},"الوادي":{home:950,office:700},
+    "خنشلة":{home:900,office:500},"سوق أهراس":{home:900,office:500},"تيبازة":{home:700,office:500},
+    "ميلة":{home:900,office:500},"عين الدفلى":{home:900,office:500},"النعامة":{home:1100,office:700},
+    "عين تموشنت":{home:900,office:500},"غرداية":{home:950,office:600},"غليزان":{home:900,office:500},
+    "تيميمون":{home:1400,office:1000},"برج باجي مختار":{home:1600,office:1100},"أولاد جلال":{home:950,office:600},
+    "بني عباس":{home:1100,office:1000},"عين صالح":{home:1400,office:1000},"عين قزام":{home:1600,office:1100},
+    "توقرت":{home:950,office:700},"جانت":{home:1600,office:1100},"المغير":{home:950,office:700},"المنيعة":{home:1000,office:800}
+  };
+
+  function money(n) { return `${n} دج`; }
+
+  function renderCart() {
+    const items = window.BoudaCart ? window.BoudaCart.getCart() : [];
+    const wrap = document.getElementById('cartItems');
+    const empty = document.getElementById('emptyCart');
+    const submitBtn = document.getElementById('submitOrderBtn');
+    if (!items.length) {
+      wrap.innerHTML = '';
+      empty.classList.remove('hidden');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'السلة فارغة';
+      updateTotals();
+      return;
+    }
+
+    empty.classList.add('hidden');
+    submitBtn.disabled = false;
+    submitBtn.textContent = '🛒 تأكيد الطلب';
+
+    wrap.innerHTML = items.map((item) => `
+      <div class="cart-item">
+        <img src="${item.image || '/book.jpg'}" alt="${item.name}">
+        <div>
+          <div class="item-name">${item.name}</div>
+          <div class="item-price">${money((item.price || 0) * (item.qty || 1))}</div>
+        </div>
+        <div>
+          <div class="qty-wrap">
+            <button type="button" class="mini-btn" onclick="changeQty('${item.id}', -1)">-</button>
+            <input type="number" min="1" value="${item.qty || 1}" onchange="setQty('${item.id}', this.value)">
+            <button type="button" class="mini-btn" onclick="changeQty('${item.id}', 1)">+</button>
+          </div>
+          <button type="button" class="mini-btn mt-1" onclick="removeCartItem('${item.id}')">حذف</button>
+        </div>
+      </div>
+    `).join('');
+
+    updateTotals();
+  }
+
+  function cartBooksTotal() {
+    const items = window.BoudaCart ? window.BoudaCart.getCart() : [];
+    return items.reduce((sum, item) => sum + ((item.price || 0) * (item.qty || 0)), 0);
+  }
+
+  function updateTotals() {
+    const books = cartBooksTotal();
+    const wilaya = document.getElementById('wilaya').value;
+    const type = document.getElementById('deliveryType').value;
+    let delivery = 0;
+    if (wilaya && type && DELIVERY[wilaya]) {
+      delivery = type === 'home' ? DELIVERY[wilaya].home : DELIVERY[wilaya].office;
+    }
+    const total = books + delivery;
+    document.getElementById('booksTotal').textContent = money(books);
+    document.getElementById('deliveryCost').textContent = delivery ? money(delivery) : '—';
+    document.getElementById('grandTotal').textContent = money(total);
+
+    const items = window.BoudaCart ? window.BoudaCart.getCart() : [];
+    document.getElementById('cartItemsPayload').value = items.map((i) => `${i.name} x${i.qty} (${i.price} دج)`).join(' | ');
+    document.getElementById('cartTotalPayload').value = String(total);
+  }
+
+  function removeCartItem(id) {
+    if (!window.BoudaCart) return;
+    window.BoudaCart.removeItem(id);
+    renderCart();
+  }
+
+  function setQty(id, value) {
+    if (!window.BoudaCart) return;
+    window.BoudaCart.updateQty(id, Number(value));
+    renderCart();
+  }
+
+  function changeQty(id, delta) {
+    if (!window.BoudaCart) return;
+    const item = window.BoudaCart.getCart().find((i) => i.id === id);
+    if (!item) return;
+    window.BoudaCart.updateQty(id, Math.max(1, (item.qty || 1) + delta));
+    renderCart();
+  }
+
+  document.getElementById('wilaya').addEventListener('change', updateTotals);
+  document.getElementById('deliveryType').addEventListener('change', updateTotals);
+  document.addEventListener('DOMContentLoaded', renderCart);
+</script>

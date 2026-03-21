@@ -42,12 +42,14 @@
       <div class="navbar-nav" id="navMenu">
         <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}">🏠 الرئيسية</a>
         <a href="/catalog/" class="nav-link {% if '/catalog' in page.url %}active{% endif %}">📚 المنتجات</a>
+        <a href="/cart/" class="nav-link {% if '/cart' in page.url %}active{% endif %}">🧺 السلة <span class="cart-count" id="cartCountMobile">0</span></a>
         <a href="/about/" class="nav-link {% if '/about' in page.url %}active{% endif %}">ℹ️ من نحن</a>
         <a href="/contact/" class="nav-link {% if '/contact' in page.url %}active{% endif %}">📞 اتصل بنا</a>
       </div>
 
       <div style="display: flex; align-items: center; gap: 12px;">
         <a href="/catalog/" class="navbar-cta">🛒 اطلب الآن</a>
+        <a href="/cart/" class="navbar-cta navbar-cart-link">🧺 السلة <span class="cart-count" id="cartCount">0</span></a>
         <button class="menu-toggle" onclick="document.getElementById('navMenu').classList.toggle('active')">
           <span></span>
           <span></span>
@@ -107,6 +109,66 @@
   </footer>
 
   <script>
+    (function () {
+      const CART_KEY = "bouda_cart_v1";
+
+      function getCart() {
+        try {
+          const raw = localStorage.getItem(CART_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveCart(items) {
+        localStorage.setItem(CART_KEY, JSON.stringify(items));
+        updateBadge();
+      }
+
+      function updateBadge() {
+        const count = getCart().reduce((sum, item) => sum + (item.qty || 0), 0);
+        const desktop = document.getElementById("cartCount");
+        const mobile = document.getElementById("cartCountMobile");
+        if (desktop) desktop.textContent = String(count);
+        if (mobile) mobile.textContent = String(count);
+      }
+
+      function addItem(item) {
+        const items = getCart();
+        const id = item.id || item.slug || item.name;
+        const existing = items.find((it) => it.id === id);
+        if (existing) {
+          existing.qty += item.qty || 1;
+        } else {
+          items.push({
+            id,
+            name: item.name,
+            slug: item.slug,
+            price: Number(item.price) || 0,
+            image: item.image || "/book.jpg",
+            qty: item.qty || 1
+          });
+        }
+        saveCart(items);
+      }
+
+      function removeItem(id) {
+        saveCart(getCart().filter((item) => item.id !== id));
+      }
+
+      function updateQty(id, qty) {
+        const items = getCart();
+        const item = items.find((it) => it.id === id);
+        if (!item) return;
+        item.qty = Math.max(1, Number(qty) || 1);
+        saveCart(items);
+      }
+
+      window.BoudaCart = { getCart, saveCart, addItem, removeItem, updateQty, updateBadge };
+      document.addEventListener("DOMContentLoaded", updateBadge);
+    })();
+
     if (window.netlifyIdentity) {
       window.netlifyIdentity.on("init", user => {
         if (!user) {
