@@ -2,28 +2,48 @@ backend:
   name: git-gateway
   branch: main
 
-media_folder: "images"
-public_folder: "/images"
+locale: "ar"
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
 
 collections:
+  - name: "categories"
+    label: "الفئات - Categories"
+    folder: "src/_categories"
+    create: true
+    identifier_field: "slug"
+    slug: "{{slug}}"
+    summary: "{{name}} ({{slug}})"
+    fields:
+      - { label: "اسم الفئة - Name", name: "name", widget: "string", hint: "مثال: البكالوريا" }
+      - { label: "المعرّف - Slug", name: "slug", widget: "string", hint: "مثال: bac" }
+      - { label: "الترتيب - Order", name: "order", widget: "number", value_type: "int", required: false, default: 100 }
+
   - name: "products"
     label: "المنتجات - Products"
     folder: "src/_products"
     create: true
     slug: "{{slug}}"
+    summary: "{{name}} — {{price}} دج ({{category}})"
     fields:
       - { label: "اسم المنتج - Name", name: "name", widget: "string" }
       - { label: "الوصف - Description", name: "description", widget: "text" }
       - { label: "السعر - Price (DZD)", name: "price", widget: "number", value_type: "int" }
       - { label: "السعر القديم - Old Price", name: "oldPrice", widget: "number", value_type: "int", required: false }
       - { label: "الصورة - Image", name: "image", widget: "image" }
+      - label: "صور إضافية - Gallery"
+        name: "gallery"
+        widget: "list"
+        required: false
+        summary: "{{fields.image}}"
+        field: { label: "صورة", name: "image", widget: "image" }
       - { label: "الشارة - Badge", name: "badge", widget: "string", required: false, hint: "مثال: طبعة 2024 ✨" }
       - { label: "منتج مميز - Featured", name: "featured", widget: "boolean", default: false, hint: "يظهر في الصفحة الرئيسية" }
+      - { label: "متوفر - In stock", name: "inStock", widget: "boolean", default: true }
       - label: "الفئة - Category"
         name: "category"
-        widget: "select"
-        options:
-          - { label: "البكالوريا", value: "bac" }
-          - { label: "شهادة التعليم المتوسط", value: "bem" }
-          - { label: "كتب أخرى", value: "books" }
-          - { label: "أخرى", value: "other" }
+        widget: "relation"
+        collection: "categories"
+        search_fields: ["name", "slug"]
+        value_field: "slug"
+        display_fields: ["name", "slug"]

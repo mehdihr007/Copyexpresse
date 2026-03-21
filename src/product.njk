@@ -26,6 +26,7 @@ permalink: "/product/{{ product.fileSlug }}/"
   .form-group label { display: block; font-weight: 700; margin-bottom: 8px; }
   .form-group input, .form-group select { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: var(--radius); font-family: 'Cairo', sans-serif; font-size: 1rem; }
   .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+  #bureauGroup { display: none; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .price-summary { background: var(--surface-2); border: 2px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0; }
   .price-row { display: flex; justify-content: space-between; padding: 8px 0; }
@@ -77,7 +78,7 @@ permalink: "/product/{{ product.fileSlug }}/"
           <div class="form-grid">
             <div class="form-group">
               <label>🗺️ الولاية</label>
-              <select name="wilaya" id="wilaya" required onchange="updateDelivery()">
+              <select name="wilaya" id="wilaya" required onchange="updateBureaux()">
                 <option value="">اختر الولاية</option>
                 <option value="أدرار">01 - أدرار</option>
                 <option value="الشلف">02 - الشلف</option>
@@ -141,12 +142,19 @@ permalink: "/product/{{ product.fileSlug }}/"
             </div>
             <div class="form-group">
               <label>🚚 نوع التوصيل</label>
-              <select name="delivery_type" id="deliveryType" required onchange="updateDelivery()">
+              <select name="delivery_type" id="deliveryType" required onchange="updateBureaux()">
                 <option value="">اختر</option>
                 <option value="home">🏠 إلى المنزل</option>
                 <option value="office">🏢 إلى مكتب ZR</option>
               </select>
             </div>
+          </div>
+
+          <div class="form-group" id="bureauGroup">
+            <label>🏢 مكتب ZR Express</label>
+            <select id="bureau" name="bureau">
+              <option value="">اختر المكتب</option>
+            </select>
           </div>
 
           <div class="form-group">
@@ -198,7 +206,49 @@ permalink: "/product/{{ product.fileSlug }}/"
     "بني عباس":{home:1100,office:1000},"عين صالح":{home:1400,office:1000},"عين قزام":{home:1600,office:1100},
     "توقرت":{home:950,office:700},"جانت":{home:1600,office:1100},"المغير":{home:950,office:700},"المنيعة":{home:1000,office:800}
   };
+
+  const ZR_BUREAUX = {
+    "أدرار":["أدرار"],"الشلف":["الشلف","تنس"],"الأغواط":["الأغواط"],
+    "أم البواقي":["أم البواقي - عين البيضاء","أم البواقي - المدينة موزع"],"باتنة":["باتنة"],
+    "بجاية":["بجاية","أقبو","بجاية رملة"],"بسكرة":["بسكرة"],"بشار":["بشار"],
+    "البليدة":["البليدة","البليدة بوقرة","البليدة موزاية"],"البويرة":["البويرة"],"تمنراست":["تمنراست"],
+    "تبسة":["تبسة"],"تلمسان":["تلمسان"],"تيارت":["تيارت"],"تيزي وزو":["تيزي وزو"],
+    "الجزائر":["الجزائر - بئر خادم","الجزائر - ليدو","الجزائر - أولاد فايت","محور الرغاية","الجزائر - بئر توتة","الجزائر - الجمهورية","الجزائر - براقي"],
+    "الجلفة":["الجلفة"],"جيجل":["جيجل","جيجل - الطاهير"],"سطيف":["سطيف","العلمة"],"سعيدة":["سعيدة"],
+    "سكيكدة":["سكيكدة"],"سيدي بلعباس":["سيدي بلعباس"],"عنابة":["عنابة","عنابة - البوني","عنابة - البوني الفرز"],
+    "قالمة":["قالمة"],"قسنطينة":["قسنطينة - زواغي","قسنطينة - المدينة الجديدة","قسنطينة - بلفو"],"المدية":["المدية"],
+    "مستغانم":["مستغانم"],"المسيلة":["المسيلة","بوسعادة"],"معسكر":["معسكر"],"ورقلة":["ورقلة","حاسي مسعود"],
+    "وهران":["وهران - المرشد","وهران - السانيا","وهران - ميلينيوم","وهران - مارافال"],"البيض":["البيض"],
+    "برج بوعريريج":["برج بوعريريج"],"بومرداس":["بومرداس","برج منايل"],"الطارف":["الطارف"],"تيسمسيلت":["تيسمسيلت"],
+    "الوادي":["الوادي"],"خنشلة":["خنشلة"],"سوق أهراس":["سوق أهراس"],"تيبازة":["تيبازة","تيبازة - قليعة"],
+    "ميلة":["ميلة"],"عين الدفلى":["عين الدفلى"],"النعامة":["النعامة"],"عين تموشنت":["عين تموشنت"],
+    "غرداية":["غرداية"],"غليزان":["غليزان"],"تيميمون":["تيميمون"],"أولاد جلال":["أولاد جلال"],
+    "بني عباس":["بني عباس","بني عباس - مدينة المستقبل"],"توقرت":["توقرت"],"المغير":["المغير"],"المنيعة":["المنيعة"]
+  };
   const productPrice = {{ product.data.price }};
+
+  function updateBureaux() {
+    const wilaya = document.getElementById('wilaya').value;
+    const deliveryType = document.getElementById('deliveryType').value;
+    const bureauGroup = document.getElementById('bureauGroup');
+    const bureauSelect = document.getElementById('bureau');
+
+    if (deliveryType === 'office' && wilaya) {
+      bureauGroup.style.display = 'block';
+      bureauSelect.innerHTML = '<option value="">اختر المكتب</option>';
+      const bureaux = ZR_BUREAUX[wilaya] || ['مكتب ZR Express الرئيسي في ' + wilaya];
+      bureaux.forEach((b) => {
+        bureauSelect.innerHTML += `<option value="${b}">${b}</option>`;
+      });
+      bureauSelect.setAttribute('required', 'required');
+    } else {
+      bureauGroup.style.display = 'none';
+      bureauSelect.value = '';
+      bureauSelect.removeAttribute('required');
+    }
+
+    updateDelivery();
+  }
 
   function updateDelivery() {
     const w = document.getElementById('wilaya').value;
