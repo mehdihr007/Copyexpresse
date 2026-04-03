@@ -8,7 +8,9 @@ module.exports = function(eleventyConfig) {
 
   // Create products collection from src/_products
   eleventyConfig.addCollection("products", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("src/_products/*.md");
+    return collectionApi
+      .getFilteredByGlob("src/_products/*.md")
+      .filter((item) => item.data.inStock !== false);
   });
 
   // Categories collection sorted by custom order then name
@@ -25,7 +27,9 @@ module.exports = function(eleventyConfig) {
 
   // Featured products only
   eleventyConfig.addCollection("featuredProducts", function(collectionApi) {
-    return collectionApi.getFilteredByGlob("src/_products/*.md").filter(item => item.data.featured);
+    return collectionApi
+      .getFilteredByGlob("src/_products/*.md")
+      .filter((item) => item.data.featured && item.data.inStock !== false);
   });
 
   return {

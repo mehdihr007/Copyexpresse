@@ -23,10 +23,12 @@ collections:
     label: "المنتجات - Products"
     folder: "src/_products"
     create: true
+    identifier_field: "slug"
     slug: "{{slug}}"
     summary: "{{name}} — {{price}} دج ({{category}})"
     fields:
       - { label: "اسم المنتج - Name", name: "name", widget: "string" }
+      - { label: "الرابط - Slug", name: "slug", widget: "string", hint: "مثال: bac-2017-2023" }
       - { label: "الوصف - Description", name: "description", widget: "text" }
       - { label: "السعر - Price (DZD)", name: "price", widget: "number", value_type: "int" }
       - { label: "السعر القديم - Old Price", name: "oldPrice", widget: "number", value_type: "int", required: false }

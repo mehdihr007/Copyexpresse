@@ -19,3 +19,39 @@ title: شكراً لك
     <a href="/" class="btn btn-primary btn-lg">العودة للرئيسية</a>
   </div>
 </section>
+
+<script>
+  (function () {
+    const src = new URLSearchParams(window.location.search).get('src');
+    if (src !== 'order-single' && src !== 'order-cart') return;
+    if (!window.fbq) return;
+
+    const dedupeKey = 'bouda_purchase_sent_v1';
+    try {
+      if (sessionStorage.getItem(dedupeKey) === '1') return;
+      sessionStorage.setItem(dedupeKey, '1');
+    } catch (_) {
+      // Ignore storage access errors and continue.
+    }
+
+    let amount = 0;
+    try {
+      const raw = localStorage.getItem('bouda_pending_purchase_v1');
+      if (raw) {
+        const payload = JSON.parse(raw);
+        if (payload && payload.source === src) {
+          amount = Number(payload.total) || 0;
+        }
+      }
+      localStorage.removeItem('bouda_pending_purchase_v1');
+    } catch (_) {
+      // Ignore JSON/storage errors and use fallback amount.
+    }
+
+    if (amount > 0) {
+      fbq('track', 'Purchase', { value: amount, currency: 'DZD' });
+    } else {
+      fbq('track', 'Purchase', { currency: 'DZD' });
+    }
+  })();
+</script>

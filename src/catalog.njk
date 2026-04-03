@@ -44,15 +44,15 @@ title: المنتجات
             {% if product.data.oldPrice %}<div class="product-price-old">{{ product.data.oldPrice }} دج</div>{% endif %}
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
-            <a href="/product/{{ product.fileSlug }}/" class="btn btn-primary" style="padding: 10px 14px; font-size: 0.85rem;">
+            <a href="/product/{{ product.data.slug or product.fileSlug }}/" class="btn btn-primary" style="padding: 10px 14px; font-size: 0.85rem;">
               <span data-i18n="common.details">التفاصيل</span>
             </a>
             <button
               type="button"
               class="btn btn-secondary add-to-cart-btn"
               style="padding: 10px 14px; font-size: 0.85rem;"
-              data-id="{{ product.fileSlug }}"
-              data-slug="{{ product.fileSlug }}"
+              data-id="{{ product.data.slug or product.fileSlug }}"
+              data-slug="{{ product.data.slug or product.fileSlug }}"
               data-name="{{ product.data.name }}"
               data-price="{{ product.data.price }}"
               data-image="{{ product.data.image }}"

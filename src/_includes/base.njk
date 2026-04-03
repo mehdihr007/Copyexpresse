@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <!-- Meta Pixel Code -->
+  {% if page.url == '/merci/' %}
+  <!-- Meta Pixel Code (purchase flow only) -->
   <script>
   !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -12,17 +13,19 @@
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', '726245523840327');
-  fbq('track', 'PageView');
   </script>
-  <noscript><img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=726245523840327&ev=PageView&noscript=1"/></noscript>
   <!-- End Meta Pixel Code -->
+  {% endif %}
 
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% if title %}
   <title>{{ title }} - Bouda Copy Express</title>
+  {% else %}
+  <title>Bouda Copy Express</title>
+  {% endif %}
   <meta name="description" content="{{ description | default('Bouda Copy Express - أفضل الكتب والمراجع الدراسية') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

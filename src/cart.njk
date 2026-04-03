@@ -42,9 +42,11 @@ title: سلة التسوق
       <div class="line"><span data-i18n="product.deliveryCost">تكلفة التوصيل</span><span id="deliveryCost">—</span></div>
       <div class="line total"><span data-i18n="product.total">المجموع</span><span id="grandTotal">0 دج</span></div>
 
-      <form name="order-cart" netlify data-netlify="true" method="POST" action="/merci/" class="checkout-form mt-3">
+      <form name="order-cart" netlify data-netlify="true" method="POST" action="/merci/?src=order-cart" class="checkout-form mt-3">
         <input type="hidden" name="form-name" value="order-cart">
         <input type="hidden" name="cart_items" id="cartItemsPayload">
+        <input type="hidden" name="cart_books_total" id="cartBooksTotalPayload">
+        <input type="hidden" name="cart_delivery_cost" id="cartDeliveryCostPayload">
         <input type="hidden" name="cart_total" id="cartTotalPayload">
 
         <h4 data-i18n="cart.customer">بيانات العميل</h4>
@@ -192,6 +194,8 @@ title: سلة التسوق
 
     const items = window.BoudaCart ? window.BoudaCart.getCart() : [];
     document.getElementById('cartItemsPayload').value = items.map((i) => `${i.name} x${i.qty} (${i.price} دج)`).join(' | ');
+    document.getElementById('cartBooksTotalPayload').value = String(books);
+    document.getElementById('cartDeliveryCostPayload').value = String(delivery);
     document.getElementById('cartTotalPayload').value = String(total);
   }
 
@@ -217,5 +221,21 @@ title: سلة التسوق
 
   document.getElementById('wilaya').addEventListener('change', updateTotals);
   document.getElementById('deliveryType').addEventListener('change', updateTotals);
+  const orderCartForm = document.querySelector('form[name="order-cart"]');
+  if (orderCartForm) {
+    orderCartForm.addEventListener('submit', function () {
+      updateTotals();
+      const total = Number(document.getElementById('cartTotalPayload').value) || 0;
+      try {
+        localStorage.setItem('bouda_pending_purchase_v1', JSON.stringify({
+          source: 'order-cart',
+          total,
+          ts: Date.now()
+        }));
+      } catch (_) {
+        // Continue form submission even if storage is unavailable.
+      }
+    });
+  }
   document.addEventListener('DOMContentLoaded', renderCart);
 </script>

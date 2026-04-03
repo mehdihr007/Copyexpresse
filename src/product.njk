@@ -4,7 +4,10 @@ pagination:
   data: collections.products
   size: 1
   alias: product
-permalink: "/product/{{ product.fileSlug }}/"
+permalink: "/product/{{ product.data.slug or product.fileSlug }}/"
+eleventyComputed:
+  title: "{{ product.data.name }}"
+  description: "{{ product.data.description }}"
 ---
 
 <style>
@@ -61,10 +64,14 @@ permalink: "/product/{{ product.fileSlug }}/"
 
       <div class="order-form">
         <h3 data-i18n="product.orderNow">🛒 اطلب الآن</h3>
-        <form name="order-single" netlify data-netlify="true" method="POST" action="/merci/">
+        <form name="order-single" netlify data-netlify="true" method="POST" action="/merci/?src=order-single">
           <input type="hidden" name="form-name" value="order-single">
           <input type="hidden" name="product" value="{{ product.data.name }}">
           <input type="hidden" name="price" value="{{ product.data.price }}">
+          <input type="hidden" name="unit_price" value="{{ product.data.price }}">
+          <input type="hidden" name="books_total" id="booksTotalInput" value="{{ product.data.price }}">
+          <input type="hidden" name="delivery_cost" id="deliveryCostInput" value="0">
+          <input type="hidden" name="order_total" id="orderTotalInput" value="{{ product.data.price }}">
 
           <div class="section-label" data-i18n="product.bookChoice">اختيار الكتاب</div>
 
@@ -219,8 +226,8 @@ permalink: "/product/{{ product.fileSlug }}/"
               class="btn btn-secondary btn-lg"
               style="flex:1; min-width:220px;"
               id="addToCartBtn"
-              data-id="{{ product.fileSlug }}"
-              data-slug="{{ product.fileSlug }}"
+              data-id="{{ product.data.slug or product.fileSlug }}"
+              data-slug="{{ product.data.slug or product.fileSlug }}"
               data-name="{{ product.data.name }}"
               data-price="{{ product.data.price }}"
               data-image="{{ product.data.image }}"
@@ -337,9 +344,29 @@ permalink: "/product/{{ product.fileSlug }}/"
     if (w && t && DELIVERY[w]) {
       cost = t === 'home' ? DELIVERY[w].home : DELIVERY[w].office;
     }
+    document.getElementById('booksTotalInput').value = String(booksPrice);
+    document.getElementById('deliveryCostInput').value = String(cost);
+    document.getElementById('orderTotalInput').value = String(booksPrice + cost);
     document.getElementById('bookPriceDisplay').textContent = booksPrice + ' دج';
     document.getElementById('deliveryCost').textContent = cost ? cost + ' دج' : '—';
     document.getElementById('totalPrice').textContent = (booksPrice + cost) + ' دج';
+  }
+
+  const orderSingleForm = document.querySelector('form[name="order-single"]');
+  if (orderSingleForm) {
+    orderSingleForm.addEventListener('submit', function () {
+      updateDelivery();
+      const total = Number(document.getElementById('orderTotalInput').value) || 0;
+      try {
+        localStorage.setItem('bouda_pending_purchase_v1', JSON.stringify({
+          source: 'order-single',
+          total,
+          ts: Date.now()
+        }));
+      } catch (_) {
+        // Continue form submission even if storage is unavailable.
+      }
+    });
   }
 
   document.getElementById('addToCartBtn').addEventListener('click', function () {
